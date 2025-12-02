@@ -1,4 +1,4 @@
-import { TFile, TFolder, Notice, loadMathJax, App, Plugin,  PluginManifest, PluginSettingTab, Setting } from 'obsidian';
+import { TFile, Notice, loadMathJax, App, Plugin,  PluginManifest, PluginSettingTab, Setting } from 'obsidian';
 
 interface PluginSettings {
   preamblePath: string;
