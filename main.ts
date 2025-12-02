@@ -1,4 +1,4 @@
-import { loadMathJax, App, Plugin, PluginManifest, PluginSettingTab, Setting } from 'obsidian';
+import { TFile, TFolder, Notice, loadMathJax, App, Plugin,  PluginManifest, PluginSettingTab, Setting } from 'obsidian';
 
 interface PluginSettings {
   preamblePath: string;
@@ -19,8 +19,30 @@ export default class JaxPlugin extends Plugin {
   }
 
   async loadPreamble() {
-    const preamble = await this.app.vault.adapter.read(this.settings.preamblePath);
+    let file = this.app.vault.getAbstractFileByPath(this.settings.preamblePath);
+    if (!file) {
+      file = await this.app.vault.create(this.settings.preamblePath, '');
+      if (file){
+        new Notice(this.settings.preamblePath + " created");
+        new Notice("modify it then reload");
+        return;
+      }else{
+        new Notice("error: " + this.settings.preamblePath + " not created");
+        return;
+      }
+    }
 
+    if(!(file instanceof TFile)){
+      new Notice(this.settings.preamblePath + " is not a file");
+      return;
+    }
+    
+    let preamble = await this.app.vault.read(file);
+    if (!preamble){
+      new Notice(" unable to read " + this.settings.preamblePath);
+      return;
+    }
+    
     if (MathJax.tex2chtml == undefined) {
       MathJax.startup.ready = () => {
         MathJax.startup.defaultReady();
